@@ -81,7 +81,11 @@ SitemapCache.prototype.refresh = async function() {
 var sitemapCache = new SitemapCache();
 router.get('/admin/refresh-sitemap', async (req, res) => {
   await sitemapCache.refresh();
-  res.status(201).send({ status: 'success', details: 'new sitemap created', });
+  res.status(201).send({
+    status: 201,
+    message: 'Success',
+    details: 'new sitemap created',
+  });
 });
 
 var gzipValue = 'gzip';

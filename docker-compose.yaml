@@ -19,6 +19,8 @@ services:
       - EXAMPLE=helloworld
       # uncomment to really see how bad it gets without caching
       # - SITEMAP_CACHE_MAX_AGE=1
+      # uncomment to really see how bad it gets without caching
+      # - CONCURRENCY=75
     healthcheck:
       test:
         - 'CMD'
