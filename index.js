@@ -1,3 +1,4 @@
+var cockatiel = require('cockatiel');
 var express = require('express');
 // for production code, use this:
 // require('express-async-errors');
@@ -88,18 +89,40 @@ function supportsGzip(acceptEncoding) {
   return acceptEncoding && acceptEncoding.toLowerCase().indexOf(gzipValue) > -1;
 }
 
+var N = isNaN(process.env['CONCURRENCY'])
+  ? 300
+  : parseInt(process.env['CONCURRENCY'], 10);
+
+// limit to N concurrent calls
+var bulkhead = cockatiel.Policy.bulkhead(N);
+
 // GET events
 router.get('/sitemap.xml', async (req, res) => {
-  // headers
-  res.header('Content-Type', 'application/xml');
+  try {
+    await bulkhead.execute(async () => {
+      // headers
+      res.header('Content-Type', 'application/xml');
 
-  // https://mdn.io/Accept-Encoding
-  var gzip = supportsGzip(req.get('Accept-Encoding'));
-  if (gzip) {
-    res.header('Content-Encoding', 'gzip');
-    res.end(await sitemapCache.gzipped());
-  } else {
-    res.end(await sitemapCache.plain());
+      // https://mdn.io/Accept-Encoding
+      var gzip = supportsGzip(req.get('Accept-Encoding'));
+      if (gzip) {
+        res.header('Content-Encoding', 'gzip');
+        res.end(await sitemapCache.gzipped());
+      } else {
+        res.end(await sitemapCache.plain());
+      }
+    });
+  } catch (err) {
+    if (err instanceof cockatiel.BulkheadRejectedError) {
+      res.status(503).send({
+        status: 503,
+        message: 'Service Not Available',
+        path: '/sitemap.xml',
+        details: 'too busy',
+      });
+    } else {
+      next(err);
+    }
   }
 });
 
