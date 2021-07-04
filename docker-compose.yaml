@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  apachebench:
+    image: httpd:2.4.48-alpine
+    command: 'sh /httpd-script.sh'
+    volumes:
+      - ./httpd-script.sh:/httpd-script.sh
+    depends_on:
+      web:
+        condition: service_healthy
+
+  web:
+    build: ./
+    ports:
+      - 8030:3000
+    environment:
+      - RUN_MODE=run
+    healthcheck:
+      test:
+        - 'CMD'
+        - 'node'
+        - '-e'
+        - 'net.connect(3000, process.exit.bind(0)).on("error", process.exit.bind(1))'
+      interval: 2s
+      timeout: 1s
+      retries: 10
