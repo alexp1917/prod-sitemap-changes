@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "RUN_MODE=run node index.js",
     "test": "RUN_MODE=test node index.js"
   },
   "license": "MIT",

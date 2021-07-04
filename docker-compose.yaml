@@ -15,9 +15,10 @@ services:
     ports:
       - 8030:3000
     environment:
+      # example of how to set an env var so that the yaml is valid
+      - EXAMPLE=helloworld
       # uncomment to really see how bad it gets without caching
       # - SITEMAP_CACHE_MAX_AGE=1
-      - RUN_MODE=run
     healthcheck:
       test:
         - 'CMD'
