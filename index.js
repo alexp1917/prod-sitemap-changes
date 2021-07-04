@@ -152,6 +152,6 @@ async function main() {
 var mode = process.env['RUN_MODE'];
 if (mode && mode.toLowerCase() == 'test') {
   testClass();
-} else {
+} else if (mode && mode.toLowerCase() == 'run') {
   main();
 }
