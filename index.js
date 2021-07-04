@@ -19,6 +19,10 @@ var defaultConfig = {
   maxAge: 3600_000, // 1 hour
 };
 
+if (!isNaN(process.env['SITEMAP_CACHE_MAX_AGE'])) {
+  defaultConfig.maxAge = parseInt(process.env['SITEMAP_CACHE_MAX_AGE'], 10);
+}
+
 function SitemapCache(config = defaultConfig) {
   this.config = config;
   this.lastUpdated = 0;
